@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { getCurrentUserInfoWithToken, loginWithToken } from '../../api/login'
+import { getCurrentUserInfo, getCurrentUserInfoWithToken, loginWithToken } from '../../api/login'
 import { UserInfo } from '../../types/user'
 
 const JWTLogin = () => {
@@ -9,7 +9,7 @@ const JWTLogin = () => {
     event.preventDefault();
 
     const formData = new FormData(event.currentTarget)
-
+    
     const loginPayload = {
       username: formData.get('username') as string,
       password: formData.get('password') as string
@@ -18,10 +18,20 @@ const JWTLogin = () => {
     // TODO: 로그인 연결 및 토큰 가져오기 (loginWithToken 함수 사용)
     // 로그인 실패시 함수를 종료합니다.
     // 로그인 성공시, getCurrentUserInfoWithToken 함수를 호출하여 userInfo를 가져옵니다.
+    
+    const loginResult = await loginWithToken(loginPayload);
+
+    if (loginResult.result === 'fail') return;
 
     // TODO: 유저 정보 가져오기 (getCurrentUserInfoWithToken 함수 사용)
     // 유저 정보 가져오기 실패시 함수를 종료합니다.
     // 유저 정보 가져오기 성공시, userInfo 상태를 업데이트합니다.
+
+    const userInfo = await getCurrentUserInfoWithToken(loginResult.access_token);
+    
+    if(!userInfo) return;
+
+    setUserInfo(userInfo);
   }
 
   return (<div>
